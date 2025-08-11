@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PaperMind AI – PDF Text Extractor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>PaperMind AI</h1>
+    <p>Extract text from academic PDFs and semantically search them.</p>
+  </header>
+
+  <section>
+    <!-- PDF Upload -->
+    <h2>Upload PDF</h2>
+    <input type="file" id="pdfFile" accept="application/pdf" />
+    <p id="fileName" style="font-style: italic;"></p>
+    <button onclick="uploadPDF()">Upload & Extract</button>
+    <div id="loader" style="display: none;">⏳ Processing PDF...</div>
+  </section>
+
+  <!-- Extracted Text -->
+  <section>
+    <h3> Extracted Text</h3>
+    <pre id="output"></pre>
+  </section>
+
+  <!-- Semantic Search -->
+  <section>
+    <h3>Semantic Search</h3>
+    <input type="text" id="searchQuery" placeholder="Ask something..." />
+    <button onclick="searchQuery()">Search</button>
+    <ul id="searchResults"></ul>
+  </section>
+
+  <!-- Summarization -->
+  <section>
+    <h3> Summarized Text</h3>
+    <button onclick="summarizeText()">Summarize</button>
+    <div id="summary-box" style="
+      border: 2px solid #4CAF50;
+      padding: 16px;
+      background-color: #f9f9f9;
+      margin-top: 12px;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      display: none;
+      white-space: pre-wrap;
+    "></div>
+  </section>
+
+  <!-- Utility -->
+  <section>
+    <button onclick="clearAll()">Clear All</button>
+    <div id="error" style="color: red; margin-top: 10px;"></div>
+  </section>
+
+  <script>
+
+
+    // Upload PDF
+    async function uploadPDF() {
+      const fileInput = document.getElementById('pdfFile');
+      const file = fileInput.files[0];
+      const output = document.getElementById('output');
+      const errorDiv = document.getElementById('error');
+      const loader = document.getElementById('loader');
+      const resultsList = document.getElementById("searchResults");
+      const summaryBox = document.getElementById("summary-box");
+
+      output.textContent = "";
+      errorDiv.textContent = "";
+      resultsList.innerHTML = "";
+      summaryBox.style.display = "none";
+      summaryBox.textContent = "";
+
+      if (!file) {
+        errorDiv.textContent = "❌ Please select a PDF file.";
+        return;
+      }
+
+      document.getElementById("fileName").textContent = 📎 Selected: ${file.name};
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      loader.style.display = "block";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/upload-pdf/", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          output.textContent = data.preview.join("\n\n") || "⚠️ No text extracted.";
+        } else {
+          throw new Error(data.detail || "Failed to process PDF.");
+        }
+
+      } catch (err) {
+        console.error("Error:", err);
+        errorDiv.textContent = "❌ Upload failed: " + err.message;
+      } finally {
+        loader.style.display = "none";
+      }
+    }
+
+    // Semantic Search
+    async function searchQuery() {
+      const queryInput = document.getElementById("searchQuery");
+      const resultsList = document.getElementById("searchResults");
+      const errorDiv = document.getElementById("error");
+
+      const query = queryInput.value.trim();
+      resultsList.innerHTML = "";
+      errorDiv.textContent = "";
+
+      if (!query) {
+        errorDiv.textContent = "❌ Please enter a search query.";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/search/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({ query }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          data.results.forEach((chunk) => {
+            const li = document.createElement("li");
+            li.innerHTML = chunk.replace(
+              new RegExp(query, "gi"),
+              (match) => <mark>${match}</mark>
+            );
+            resultsList.appendChild(li);
+          });
+        } else {
+          throw new Error(data.detail || "Search failed.");
+        }
+      } catch (err) {
+        console.error("Search Error:", err);
+        errorDiv.textContent = "❌ Search failed: " + err.message;
+      }
+    }
+
+    // Summarize
+    async function summarizeText() {
+      const output = document.getElementById('output');
+      const errorDiv = document.getElementById('error');
+      const summaryBox = document.getElementById('summary-box');
+
+      const text = output.textContent.trim();
+      errorDiv.textContent = "";
+      summaryBox.style.display = "none";
+      summaryBox.textContent = "";
+
+      if (!text) {
+        errorDiv.textContent = "❌ No extracted text available to summarize.";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/summarize/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: text })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          summaryBox.textContent = data.summary;
+          summaryBox.style.display = "block";
+        } else {
+          throw new Error(data.error || "Summarization failed.");
+        }
+      } catch (err) {
+        console.error("Summarization Error:", err);
+        errorDiv.textContent = "❌ Summarization failed: " + err.message;
+      }
+    }
+
+    // Clear All
+    function clearAll() {
+      document.getElementById("pdfFile").value = "";
+      document.getElementById("fileName").textContent = "";
+      document.getElementById("output").textContent = "";
+      document.getElementById("searchQuery").value = "";
+      document.getElementById("searchResults").innerHTML = "";
+      document.getElementById("summary-box").textContent = "";
+      document.getElementById("summary-box").style.display = "none";
+      document.getElementById("error").textContent = "";
+    }
+  </script>
+</body>
+</html>
