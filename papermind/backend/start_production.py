@@ -31,9 +31,6 @@ def main():
         "port": port,
         "workers": 1,  # Single worker for free tier
         "timeout_keep_alive": 30,
-        "timeout_graceful_shutdown": 10,
-        "max_requests": 1000,
-        "max_requests_jitter": 50,
     }
     
     # Add production-specific settings
