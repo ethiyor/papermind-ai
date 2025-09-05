@@ -64,6 +64,8 @@ origins = [
     "https://*.onrender.com",  # Render domains
     "https://papermind-ai-frontend-pnbb.onrender.com",  # Your deployed frontend
     "https://papermind-ai-backend-lpqr.onrender.com",  # Your deployed backend
+    "https://papermind-ai-frontend-production.up.railway.app",  # Railway frontend
+    "https://papermind-ai-production.up.railway.app",  # Railway backend
     # Add your frontend domain here when deployed
 ]
 
