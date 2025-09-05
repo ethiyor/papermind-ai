@@ -7,7 +7,7 @@ from typing import List, Optional
 class PaperMindSummarizer:
     """Advanced summarization with multiple model options for academic papers"""
     
-    def __init__(self, model_name: str = "t5-small"):
+    def __init__(self, model_name: str = "sshleifer/distilbart-cnn-12-6"):
         """Initialize with specified model"""
         self.model_name = model_name
         self.summarizer = None
@@ -157,20 +157,20 @@ class PaperMindSummarizer:
         self.model_name = new_model
         self.load_model()
 
-# Available models for different use cases (ultra-lightweight for 512MB)
+# Available models for different use cases (Railway 8GB RAM)
 AVAILABLE_MODELS = {
-    "t5": "t5-small",                               # Ultra-lightweight ~60MB (RECOMMENDED for free tier)
-    "distilbart": "sshleifer/distilbart-cnn-6-6",  # Lightweight ~268MB (may hit memory limit)
-    "bart": "sshleifer/distilbart-cnn-12-6",       # Medium ~600MB (likely to exceed memory)
-    "pegasus": "google/pegasus-xsum",              # News-style (large - exceeds memory)
-    "led": "allenai/led-base-16384",               # For long docs (very large - exceeds memory)
+    "distilbart": "sshleifer/distilbart-cnn-12-6",  # Good balance of speed and quality (RECOMMENDED)
+    "bart": "facebook/bart-large-cnn",              # Best quality for longer texts
+    "t5": "t5-base",                                # Versatile text-to-text model
+    "pegasus": "google/pegasus-xsum",               # Excellent for news-style summaries
+    "led": "allenai/led-base-16384",                # Best for very long documents
 }
 
 # Initialize default summarizer
 _default_summarizer = PaperMindSummarizer()
 
 def summarize_text(text: str, max_chunk_length: int = 1000, 
-                  model: str = "t5", style: str = "academic") -> str:
+                  model: str = "distilbart", style: str = "academic") -> str:
     """Main summarization function with model selection"""
     global _default_summarizer
     
