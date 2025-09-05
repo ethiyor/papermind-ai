@@ -18,13 +18,13 @@ services:
     # - key: SUPABASE_KEY
     #   sync: false  # Set manually in Render dashboard
 
-  # Frontend Static Site
+  # Frontend Web Service (serving static files)
   - type: web
     name: papermind-ai-frontend
-    env: static
+    env: node
     region: ohio
-    buildCommand: "echo 'Building static frontend'"
-    staticPublishPath: frontend
+    buildCommand: "cd frontend && npm install"
+    startCommand: "cd frontend && npm run start"
     plan: free
 
 # Database (Optional - if you want PostgreSQL instead of Supabase)

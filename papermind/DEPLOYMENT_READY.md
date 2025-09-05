@@ -25,13 +25,14 @@ git push origin main
    - **Start Command**: `python start_production.py`
 
 ### **Step 3: Deploy Frontend on Render**
-1. Create **New Static Site** (NOT Web Service)
+1. Create **New Web Service** (since Render requires start command)
 2. Connect same GitHub repository
 3. Configure:
    - **Name**: `papermind-ai-frontend`
+   - **Environment**: `Node`
    - **Root Directory**: `frontend`
-   - **Build Command**: `echo "Static site - no build needed"`
-   - **Publish Directory**: `.`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm run start`
    - **Auto-Deploy**: Yes
 
 ---
@@ -116,6 +117,19 @@ After successful deployment:
 | CORS errors | Update frontend API URLs |
 | Memory issues | Use free tier optimized models |
 | Timeout | Optimize model loading |
+| **Frontend npm errors** | **Use "Static Site" not "Web Service"** |
+| **Node.js detection** | **Ensure `.static` file exists in frontend/** |
+
+---
+
+## ⚠️ **Important: Frontend Deployment**
+
+**CRITICAL:** When deploying the frontend, make sure to:
+1. Select **"Static Site"** (NOT "Web Service")
+2. The `frontend/.static` file tells Render this is static
+3. If you see npm errors, you selected the wrong deployment type
+
+See `FRONTEND_DEPLOYMENT_FIX.md` for detailed troubleshooting.
 
 ---
 

@@ -4,8 +4,11 @@
   "description": "PaperMind AI Frontend - Static HTML/CSS/JS",
   "main": "index.html",
   "scripts": {
-    "start": "echo 'This is a static site - no server needed'",
+    "start": "npx serve . -p $PORT",
     "build": "echo 'No build process required'"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
   },
   "keywords": ["static", "html", "ai", "pdf"],
   "author": "PaperMind AI",
