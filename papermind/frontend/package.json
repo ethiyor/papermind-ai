@@ -1,0 +1,14 @@
+{
+  "name": "papermind-ai-frontend",
+  "version": "1.0.0",
+  "description": "PaperMind AI Frontend - Static HTML/CSS/JS",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'This is a static site - no server needed'",
+    "build": "echo 'No build process required'"
+  },
+  "keywords": ["static", "html", "ai", "pdf"],
+  "author": "PaperMind AI",
+  "license": "MIT",
+  "type": "module"
+}

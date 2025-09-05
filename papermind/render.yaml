@@ -23,23 +23,9 @@ services:
     name: papermind-ai-frontend
     env: static
     region: ohio
-    buildCommand: "echo 'No build required for static frontend'"
+    buildCommand: "echo 'Building static frontend'"
     staticPublishPath: frontend
     plan: free
-    routes:
-      - type: redirect
-        source: /*
-        destination: /index.html
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: Referrer-Policy
-        value: strict-origin-when-cross-origin
 
 # Database (Optional - if you want PostgreSQL instead of Supabase)
 # databases:

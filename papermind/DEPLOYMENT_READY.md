@@ -25,13 +25,14 @@ git push origin main
    - **Start Command**: `python start_production.py`
 
 ### **Step 3: Deploy Frontend on Render**
-1. Create **New Static Site**
+1. Create **New Static Site** (NOT Web Service)
 2. Connect same GitHub repository
 3. Configure:
    - **Name**: `papermind-ai-frontend`
    - **Root Directory**: `frontend`
-   - **Build Command**: `echo "Static site"`
+   - **Build Command**: `echo "Static site - no build needed"`
    - **Publish Directory**: `.`
+   - **Auto-Deploy**: Yes
 
 ---
 
