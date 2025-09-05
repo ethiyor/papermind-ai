@@ -16,19 +16,37 @@ def get_model():
 
 # Split text into manageable chunks
 def chunk_text(text: str, max_length: int = 500) -> list:
-    lines = text.split("\n")
+    if not text or not text.strip():
+        return []
+    
+    # Clean up the text
+    text = text.strip()
+    
+    # Split by sentences first, then by lines
+    sentences = text.replace('\n', ' ').split('. ')
     chunks, current = [], ""
 
-    for line in lines:
-        if len(current) + len(line) < max_length:
-            current += " " + line.strip()
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+            
+        # Add period back if it was removed by split
+        if not sentence.endswith('.') and not sentence.endswith('!') and not sentence.endswith('?'):
+            sentence += '.'
+            
+        if len(current) + len(sentence) + 1 < max_length:
+            current += " " + sentence if current else sentence
         else:
-            chunks.append(current.strip())
-            current = line.strip()
+            if current:
+                chunks.append(current.strip())
+            current = sentence
+    
     if current:
         chunks.append(current.strip())
 
-    return [c for c in chunks if c]
+    # Filter out empty chunks and ensure minimum length
+    return [c for c in chunks if c and len(c.strip()) > 10]
 
 
 # Embed a list of text chunks

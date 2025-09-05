@@ -3,90 +3,380 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PaperMind AI – PDF Text Extractor</title>
+  <title>PaperMind AI – Intelligent PDF Analysis</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>PaperMind AI</h1>
-    <p>Extract text from academic PDFs and semantically search them.</p>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <i class="fas fa-brain"></i>
+        <span>PaperMind AI</span>
+      </div>
+      <div class="nav-controls">
+        <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-content">
+      <h1>
+        <i class="fas fa-brain gradient-icon"></i>
+        PaperMind AI
+      </h1>
+      <p class="hero-subtitle">Transform academic PDFs into intelligent, searchable knowledge</p>
+      <div class="hero-features">
+        <span><i class="fas fa-file-pdf"></i> PDF Extraction</span>
+        <span><i class="fas fa-search"></i> Semantic Search</span>
+        <span><i class="fas fa-magic"></i> AI Summarization</span>
+      </div>
+    </div>
   </header>
 
-  <section>
-    <!-- PDF Upload -->
-    <h2>Upload PDF</h2>
-    <input type="file" id="pdfFile" accept="application/pdf" />
-    <p id="fileName" style="font-style: italic;"></p>
-    <button onclick="uploadPDF()">Upload & Extract</button>
-    <div id="loader" style="display: none;">⏳ Processing PDF...</div>
-  </section>
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- PDF Upload Section -->
+    <section class="card upload-section">
+      <div class="card-header">
+        <h2><i class="fas fa-upload"></i> Upload PDF Document</h2>
+        <p>Upload your academic paper to begin analysis</p>
+      </div>
+      
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-content">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Drag & drop your PDF here or click to browse</p>
+          <input type="file" id="pdfFile" accept="application/pdf" hidden />
+          <button class="btn-secondary" onclick="document.getElementById('pdfFile').click()">
+            <i class="fas fa-folder-open"></i> Choose File
+          </button>
+        </div>
+      </div>
+      
+      <div id="fileInfo" class="file-info" style="display: none;">
+        <div class="file-preview">
+          <i class="fas fa-file-pdf"></i>
+          <div class="file-details">
+            <span id="fileName" class="file-name"></span>
+            <span id="fileSize" class="file-size"></span>
+          </div>
+          <button class="btn-remove" onclick="removeFile()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      
+      <button id="uploadBtn" class="btn-primary" onclick="uploadPDF()" disabled>
+        <i class="fas fa-magic"></i> Extract & Analyze
+      </button>
+      
+      <div id="loader" class="loader" style="display: none;">
+        <div class="spinner"></div>
+        <p>Processing your document...</p>
+      </div>
+    </section>
 
-  <!-- Extracted Text -->
-  <section>
-    <h3> Extracted Text</h3>
-    <pre id="output"></pre>
-  </section>
+    <!-- Extracted Text Section -->
+    <section id="textSection" class="card text-section" style="display: none;">
+      <div class="card-header">
+        <h3><i class="fas fa-file-text"></i> Extracted Content</h3>
+        <div class="card-actions">
+          <button class="btn-icon" onclick="copyText()" title="Copy text">
+            <i class="fas fa-copy"></i>
+          </button>
+          <button class="btn-icon" onclick="toggleFullscreen('output')" title="Full screen">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+      </div>
+      <div class="text-container">
+        <pre id="output" class="extracted-text"></pre>
+      </div>
+    </section>
 
-  <!-- Semantic Search -->
-  <section>
-    <h3>Semantic Search</h3>
-    <input type="text" id="searchQuery" placeholder="Ask something..." />
-    <button onclick="searchQuery()">Search</button>
-    <ul id="searchResults"></ul>
-  </section>
+    <!-- Search and Summarization Tabs -->
+    <section id="analysisSection" class="card analysis-section" style="display: none;">
+      <div class="tab-container">
+        <div class="tab-header">
+          <button class="tab-btn active" onclick="switchTab('search')">
+            <i class="fas fa-search"></i> Search
+          </button>
+          <button class="tab-btn" onclick="switchTab('summarize')">
+            <i class="fas fa-magic"></i> Summarize
+          </button>
+        </div>
 
-  <!-- Summarization -->
-  <section>
-    <h3> Summarized Text</h3>
-    <button onclick="summarizeText()">Summarize</button>
-    <div id="summary-box" style="
-      border: 2px solid #4CAF50;
-      padding: 16px;
-      background-color: #f9f9f9;
-      margin-top: 12px;
-      border-radius: 8px;
-      font-family: Arial, sans-serif;
-      display: none;
-      white-space: pre-wrap;
-    "></div>
-  </section>
+        <!-- Search Tab -->
+        <div id="searchTab" class="tab-content active">
+          <div class="search-container">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchQuery" placeholder="Ask questions about your document..." />
+              <button class="search-btn" onclick="searchQuery()">
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div id="searchResults" class="search-results"></div>
+        </div>
 
-  <!-- Utility -->
-  <section>
-    <button onclick="clearAll()">Clear All</button>
-    <div id="error" style="color: red; margin-top: 10px;"></div>
-  </section>
+        <!-- Summarization Tab -->
+        <div id="summarizeTab" class="tab-content">
+          <div class="summarize-controls">
+            <div class="control-group">
+              <label><i class="fas fa-cog"></i> Model</label>
+              <select id="modelSelect" class="select-field">
+                <option value="bart">BART (Fast & Reliable)</option>
+                <option value="distilbart">DistilBART (Balanced)</option>
+                <option value="led">LED (Detailed Analysis)</option>
+                <option value="pegasus">Pegasus (Abstractive)</option>
+                <option value="t5">T5 (Versatile)</option>
+              </select>
+            </div>
+            
+            <div class="control-group">
+              <label><i class="fas fa-palette"></i> Style</label>
+              <select id="styleSelect" class="select-field">
+                <option value="academic">Academic</option>
+                <option value="brief">Brief</option>
+                <option value="detailed">Detailed</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="btn-primary" onclick="summarizeText()">
+            <i class="fas fa-magic"></i> Generate Summary
+          </button>
+          
+          <div id="summarize-loader" class="loader" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating intelligent summary...</p>
+          </div>
+          
+          <div id="summary-box" class="summary-container" style="display: none;">
+            <div class="summary-header">
+              <h4><i class="fas fa-scroll"></i> AI-Generated Summary</h4>
+              <div class="summary-actions">
+                <button class="btn-icon" onclick="copySummary()" title="Copy summary">
+                  <i class="fas fa-copy"></i>
+                </button>
+                <button class="btn-icon" onclick="toggleFullscreen('summary-content')" title="Full screen">
+                  <i class="fas fa-expand"></i>
+                </button>
+              </div>
+            </div>
+            <div id="summary-content" class="summary-content"></div>
+            <div id="summary-meta" class="summary-meta"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error Display -->
+    <div id="errorToast" class="error-toast" style="display: none;">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span id="errorMessage"></span>
+      <button class="error-close" onclick="hideError()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="success-toast" style="display: none;">
+      <i class="fas fa-check-circle"></i>
+      <span id="successMessage"></span>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 PaperMind AI. Powered by advanced AI models.</p>
+      <div class="footer-links">
+        <button class="btn-text" onclick="clearAll()">
+          <i class="fas fa-trash"></i> Clear All
+        </button>
+      </div>
+    </div>
+  </footer>
 
   <script>
+    // Global variables
+    let isDarkMode = localStorage.getItem('darkMode') === 'true';
+    let currentTab = 'search';
 
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeApp();
+      setupEventListeners();
+      loadAvailableModels();
+    });
+
+    function initializeApp() {
+      // Apply saved theme
+      if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+      }
+    }
+
+    function setupEventListeners() {
+      const pdfFile = document.getElementById('pdfFile');
+      const uploadArea = document.getElementById('uploadArea');
+      const searchQuery = document.getElementById('searchQuery');
+
+      // File upload events
+      pdfFile.addEventListener('change', handleFileSelect);
+      
+      // Drag and drop
+      uploadArea.addEventListener('dragover', handleDragOver);
+      uploadArea.addEventListener('drop', handleDrop);
+      uploadArea.addEventListener('click', () => pdfFile.click());
+
+      // Search on Enter
+      searchQuery.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          searchQuery();
+        }
+      });
+    }
+
+    // Theme Management
+    function toggleTheme() {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', isDarkMode);
+      
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    }
+
+    // Tab Management
+    function switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+      
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName + 'Tab').classList.add('active');
+      
+      currentTab = tabName;
+    }
+
+    // File Management
+    function handleFileSelect() {
+      const file = document.getElementById('pdfFile').files[0];
+      if (file) {
+        showFileInfo(file);
+        document.getElementById('uploadBtn').disabled = false;
+      }
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type === 'application/pdf') {
+        document.getElementById('pdfFile').files = files;
+        handleFileSelect();
+      } else {
+        showError('Please drop a valid PDF file');
+      }
+    }
+
+    function showFileInfo(file) {
+      const fileInfo = document.getElementById('fileInfo');
+      const fileName = document.getElementById('fileName');
+      const fileSize = document.getElementById('fileSize');
+      
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      fileInfo.style.display = 'block';
+      
+      document.getElementById('uploadArea').style.display = 'none';
+    }
+
+    function removeFile() {
+      document.getElementById('pdfFile').value = '';
+      document.getElementById('fileInfo').style.display = 'none';
+      document.getElementById('uploadArea').style.display = 'flex';
+      document.getElementById('uploadBtn').disabled = true;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Load available models
+    async function loadAvailableModels() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/models/");
+        const data = await response.json();
+        
+        const modelSelect = document.getElementById('modelSelect');
+        modelSelect.innerHTML = '';
+        
+        Object.entries(data.available_models).forEach(([key, value]) => {
+          const option = document.createElement('option');
+          option.value = key;
+          
+          // Enhanced model descriptions
+          const descriptions = {
+            'bart': 'BART (Fast & Reliable)',
+            'distilbart': 'DistilBART (Balanced)',
+            'led': 'LED (Detailed Analysis)',
+            'pegasus': 'Pegasus (Abstractive)',
+            't5': 'T5 (Versatile)'
+          };
+          
+          option.textContent = descriptions[key] || key.toUpperCase();
+          modelSelect.appendChild(option);
+        });
+        
+        console.log('Available models loaded:', data.available_models);
+      } catch (err) {
+        console.warn('Could not load models from server, using defaults');
+      }
+    }
 
     // Upload PDF
     async function uploadPDF() {
       const fileInput = document.getElementById('pdfFile');
       const file = fileInput.files[0];
       const output = document.getElementById('output');
-      const errorDiv = document.getElementById('error');
       const loader = document.getElementById('loader');
-      const resultsList = document.getElementById("searchResults");
-      const summaryBox = document.getElementById("summary-box");
-
-      output.textContent = "";
-      errorDiv.textContent = "";
-      resultsList.innerHTML = "";
-      summaryBox.style.display = "none";
-      summaryBox.textContent = "";
 
       if (!file) {
-        errorDiv.textContent = "❌ Please select a PDF file.";
+        showError("Please select a PDF file.");
         return;
       }
-
-      document.getElementById("fileName").textContent = 📎 Selected: ${file.name};
 
       const formData = new FormData();
       formData.append("file", file);
 
-      loader.style.display = "block";
+      loader.style.display = "flex";
+      hideError();
 
       try {
         const response = await fetch("http://127.0.0.1:8000/upload-pdf/", {
@@ -98,13 +388,29 @@
 
         if (response.ok) {
           output.textContent = data.preview.join("\n\n") || "⚠️ No text extracted.";
+          
+          // Show text and analysis sections
+          document.getElementById('textSection').style.display = 'block';
+          document.getElementById('analysisSection').style.display = 'block';
+          
+          // Clear previous results
+          document.getElementById('searchResults').innerHTML = '';
+          document.getElementById('summary-box').style.display = 'none';
+          
+          showSuccess("PDF processed successfully!");
+          
+          // Smooth scroll to text section
+          document.getElementById('textSection').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
         } else {
           throw new Error(data.detail || "Failed to process PDF.");
         }
 
       } catch (err) {
         console.error("Error:", err);
-        errorDiv.textContent = "❌ Upload failed: " + err.message;
+        showError("Upload failed: " + err.message);
       } finally {
         loader.style.display = "none";
       }
@@ -113,17 +419,16 @@
     // Semantic Search
     async function searchQuery() {
       const queryInput = document.getElementById("searchQuery");
-      const resultsList = document.getElementById("searchResults");
-      const errorDiv = document.getElementById("error");
+      const resultsContainer = document.getElementById("searchResults");
 
       const query = queryInput.value.trim();
-      resultsList.innerHTML = "";
-      errorDiv.textContent = "";
-
       if (!query) {
-        errorDiv.textContent = "❌ Please enter a search query.";
+        showError("Please enter a search query.");
         return;
       }
+
+      resultsContainer.innerHTML = '<div class="loading-results"><div class="spinner"></div><p>Searching...</p></div>';
+      hideError();
 
       try {
         const response = await fetch("http://127.0.0.1:8000/search/", {
@@ -137,36 +442,69 @@
         const data = await response.json();
 
         if (response.ok) {
-          data.results.forEach((chunk) => {
-            const li = document.createElement("li");
-            li.innerHTML = chunk.replace(
-              new RegExp(query, "gi"),
-              (match) => <mark>${match}</mark>
-            );
-            resultsList.appendChild(li);
-          });
+          displaySearchResults(data.results, query);
         } else {
           throw new Error(data.detail || "Search failed.");
         }
       } catch (err) {
         console.error("Search Error:", err);
-        errorDiv.textContent = "❌ Search failed: " + err.message;
+        resultsContainer.innerHTML = '';
+        showError("Search failed: " + err.message);
       }
+    }
+
+    function displaySearchResults(results, query) {
+      const container = document.getElementById("searchResults");
+      
+      if (results.length === 0) {
+        container.innerHTML = '<div class="no-results"><i class="fas fa-search"></i><p>No results found for your query.</p></div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      
+      results.forEach((chunk, index) => {
+        const resultItem = document.createElement("div");
+        resultItem.className = "result-item";
+        
+        const highlightedText = chunk.replace(
+          new RegExp(query, "gi"),
+          (match) => `<mark>${match}</mark>`
+        );
+        
+        resultItem.innerHTML = `
+          <div class="result-header">
+            <span class="result-number">${index + 1}</span>
+            <button class="btn-icon" onclick="copyText('${chunk.replace(/'/g, "\\'")}')">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          <div class="result-content">${highlightedText}</div>
+        `;
+        
+        container.appendChild(resultItem);
+      });
     }
 
     // Summarize
     async function summarizeText() {
       const output = document.getElementById('output');
-      const errorDiv = document.getElementById('error');
       const summaryBox = document.getElementById('summary-box');
+      const loader = document.getElementById('summarize-loader');
+      const modelSelect = document.getElementById('modelSelect');
+      const styleSelect = document.getElementById('styleSelect');
 
       const text = output.textContent.trim();
-      errorDiv.textContent = "";
+      const selectedModel = modelSelect.value;
+      const selectedStyle = styleSelect.value;
+      
+      hideError();
       summaryBox.style.display = "none";
-      summaryBox.textContent = "";
+      loader.style.display = "flex";
 
       if (!text) {
-        errorDiv.textContent = "❌ No extracted text available to summarize.";
+        showError("No extracted text available to summarize.");
+        loader.style.display = "none";
         return;
       }
 
@@ -176,33 +514,123 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ text: text })
+          body: JSON.stringify({ 
+            text: text,
+            model: selectedModel,
+            style: selectedStyle,
+            chunk_length: 1000
+          })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          summaryBox.textContent = data.summary;
-          summaryBox.style.display = "block";
+          displaySummary(data);
+          showSuccess("Summary generated successfully!");
         } else {
           throw new Error(data.error || "Summarization failed.");
         }
       } catch (err) {
         console.error("Summarization Error:", err);
-        errorDiv.textContent = "❌ Summarization failed: " + err.message;
+        showError("Summarization failed: " + err.message);
+      } finally {
+        loader.style.display = "none";
       }
     }
 
-    // Clear All
+    function displaySummary(data) {
+      const summaryBox = document.getElementById('summary-box');
+      const summaryContent = document.getElementById('summary-content');
+      const summaryMeta = document.getElementById('summary-meta');
+      
+      summaryContent.textContent = data.summary;
+      summaryMeta.innerHTML = `
+        <div class="meta-item">
+          <i class="fas fa-cog"></i>
+          <span>Model: ${data.model_used}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fas fa-palette"></i>
+          <span>Style: ${data.style}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fas fa-clock"></i>
+          <span>Generated: ${new Date().toLocaleTimeString()}</span>
+        </div>
+      `;
+      
+      summaryBox.style.display = "block";
+    }
+
+    // Utility Functions
+    function copyText(text = null) {
+      const textToCopy = text || document.getElementById('output').textContent;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showSuccess('Text copied to clipboard!');
+      });
+    }
+
+    function copySummary() {
+      const summaryText = document.getElementById('summary-content').textContent;
+      navigator.clipboard.writeText(summaryText).then(() => {
+        showSuccess('Summary copied to clipboard!');
+      });
+    }
+
+    function toggleFullscreen(elementId) {
+      const element = document.getElementById(elementId);
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      }
+    }
+
+    function showError(message) {
+      const errorToast = document.getElementById('errorToast');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      errorMessage.textContent = message;
+      errorToast.style.display = 'flex';
+      
+      // Auto hide after 5 seconds
+      setTimeout(hideError, 5000);
+    }
+
+    function hideError() {
+      document.getElementById('errorToast').style.display = 'none';
+    }
+
+    function showSuccess(message) {
+      const successToast = document.getElementById('successToast');
+      const successMessage = document.getElementById('successMessage');
+      
+      successMessage.textContent = message;
+      successToast.style.display = 'flex';
+      
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        successToast.style.display = 'none';
+      }, 3000);
+    }
+
     function clearAll() {
-      document.getElementById("pdfFile").value = "";
-      document.getElementById("fileName").textContent = "";
-      document.getElementById("output").textContent = "";
-      document.getElementById("searchQuery").value = "";
-      document.getElementById("searchResults").innerHTML = "";
-      document.getElementById("summary-box").textContent = "";
-      document.getElementById("summary-box").style.display = "none";
-      document.getElementById("error").textContent = "";
+      if (confirm('Are you sure you want to clear all data?')) {
+        // Reset file input
+        document.getElementById("pdfFile").value = "";
+        removeFile();
+        
+        // Clear content
+        document.getElementById("output").textContent = "";
+        document.getElementById("searchQuery").value = "";
+        document.getElementById("searchResults").innerHTML = "";
+        document.getElementById("summary-box").style.display = "none";
+        
+        // Hide sections
+        document.getElementById('textSection').style.display = 'none';
+        document.getElementById('analysisSection').style.display = 'none';
+        
+        hideError();
+        showSuccess("All data cleared successfully!");
+      }
     }
   </script>
 </body>
