@@ -56,6 +56,7 @@ origins = [
     "http://127.0.0.1:8080",
     "https://*.onrender.com",  # Render domains
     "https://papermind-ai-frontend-pnbb.onrender.com",  # Your deployed frontend
+    "https://papermind-ai-backend-lpqr.onrender.com",  # Your deployed backend
     # Add your frontend domain here when deployed
 ]
 

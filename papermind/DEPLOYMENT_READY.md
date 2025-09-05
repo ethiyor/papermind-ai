@@ -75,7 +75,7 @@ After backend deployment, update frontend to use production API:
 
 ```bash
 # Replace YOUR_BACKEND_URL with actual Render URL
-python update_frontend.py https://papermind-ai-backend.onrender.com
+python update_frontend.py https://papermind-ai-backend-lpqr.onrender.com
 git add frontend/index.html
 git commit -m "Update frontend to use production API"
 git push origin main
