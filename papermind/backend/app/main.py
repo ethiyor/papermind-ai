@@ -10,7 +10,14 @@ from dotenv import load_dotenv
 
 from .pdf_utils import extract_text_from_pdf
 from .embed_utils import chunk_text, embed_chunks, search_chunks
-from .summarizer_utils import summarize_text, get_available_models
+try:
+    from .summarizer_utils import summarize_text, get_available_models
+    ML_AVAILABLE = True
+except ImportError:
+    from .minimal_summarizer import summarize_text_minimal as summarize_text
+    ML_AVAILABLE = False
+    def get_available_models():
+        return {"minimal": "rule-based extractive summarizer"}
 
 # Load environment variables
 env_path = os.path.join(os.path.dirname(__file__), '.env')
