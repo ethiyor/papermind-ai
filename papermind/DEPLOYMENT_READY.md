@@ -56,7 +56,7 @@ git push origin main
 In Render dashboard, set these environment variables:
 
 ```
-PYTHON_VERSION=3.12.3
+PYTHON_VERSION=3.11.9
 ENVIRONMENT=production
 TOKENIZERS_PARALLELISM=false
 ```

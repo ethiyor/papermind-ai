@@ -211,6 +211,11 @@
   </footer>
 
   <script>
+    // API Configuration
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? 'http://127.0.0.1:8000' 
+      : 'https://papermind-ai-backend.onrender.com';
+
     // Global variables
     let isDarkMode = localStorage.getItem('darkMode') === 'true';
     let currentTab = 'search';
@@ -331,7 +336,7 @@
     // Load available models
     async function loadAvailableModels() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/models/");
+        const response = await fetch(`${API_BASE_URL}/models/`);
         const data = await response.json();
         
         const modelSelect = document.getElementById('modelSelect');
@@ -379,7 +384,7 @@
       hideError();
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/upload-pdf/", {
+        const response = await fetch(`${API_BASE_URL}/upload-pdf/`, {
           method: "POST",
           body: formData,
         });
@@ -431,7 +436,7 @@
       hideError();
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/search/", {
+        const response = await fetch(`${API_BASE_URL}/search/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -509,7 +514,7 @@
       }
 
       try {
-        const response = await fetch("http://127.0.0.1:8000/summarize/", {
+        const response = await fetch(`${API_BASE_URL}/summarize/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

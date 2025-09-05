@@ -9,7 +9,7 @@ services:
     plan: free
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.3
+        value: 3.11.9
       - key: ENVIRONMENT
         value: production
     # Add your environment variables here:
