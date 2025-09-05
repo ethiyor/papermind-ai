@@ -7,7 +7,7 @@ from typing import List, Optional
 class PaperMindSummarizer:
     """Advanced summarization with multiple model options for academic papers"""
     
-    def __init__(self, model_name: str = "facebook/bart-large-cnn"):
+    def __init__(self, model_name: str = "sshleifer/distilbart-cnn-6-6"):
         """Initialize with specified model"""
         self.model_name = model_name
         self.summarizer = None
@@ -21,9 +21,9 @@ class PaperMindSummarizer:
             print("✓ Summarization model loaded successfully")
         except Exception as e:
             print(f"Error loading model {self.model_name}: {e}")
-            # Fallback to BART
-            print("Falling back to BART model...")
-            self.model_name = "facebook/bart-large-cnn"
+            # Fallback to lightweight DistilBART
+            print("Falling back to lightweight DistilBART model...")
+            self.model_name = "sshleifer/distilbart-cnn-6-6"
             self.summarizer = pipeline("summarization", model=self.model_name)
     
     def preprocess_academic_text(self, text: str) -> str:
@@ -150,20 +150,20 @@ class PaperMindSummarizer:
         self.model_name = new_model
         self.load_model()
 
-# Available models for different use cases
+# Available models for different use cases (optimized for low memory)
 AVAILABLE_MODELS = {
-    "bart": "facebook/bart-large-cnn",  # Best for speed and general quality (RECOMMENDED)
-    "distilbart": "sshleifer/distilbart-cnn-12-6",  # Good balance of speed and quality
-    "led": "allenai/led-base-16384",    # Best for long documents and detailed summaries
-    "pegasus": "google/pegasus-xsum",   # Good for news-style summaries
-    "t5": "t5-base",                    # Versatile model
+    "distilbart": "sshleifer/distilbart-cnn-6-6",  # Ultra-lightweight for 512MB memory (RECOMMENDED)
+    "bart": "sshleifer/distilbart-cnn-12-6",      # Good balance of speed and quality
+    "t5": "t5-small",                             # Small T5 model (~60MB)
+    "pegasus": "google/pegasus-xsum",             # News-style summaries (medium size)
+    "led": "allenai/led-base-16384",              # For longer documents (larger - use carefully)
 }
 
 # Initialize default summarizer
 _default_summarizer = PaperMindSummarizer()
 
 def summarize_text(text: str, max_chunk_length: int = 1000, 
-                  model: str = "bart", style: str = "academic") -> str:
+                  model: str = "distilbart", style: str = "academic") -> str:
     """Main summarization function with model selection"""
     global _default_summarizer
     
