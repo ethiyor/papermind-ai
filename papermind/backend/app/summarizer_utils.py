@@ -7,7 +7,7 @@ from typing import List, Optional
 class PaperMindSummarizer:
     """Advanced summarization with multiple model options for academic papers"""
     
-    def __init__(self, model_name: str = "sshleifer/distilbart-cnn-6-6"):
+    def __init__(self, model_name: str = "t5-small"):
         """Initialize with specified model"""
         self.model_name = model_name
         self.summarizer = None
@@ -21,9 +21,9 @@ class PaperMindSummarizer:
             print("✓ Summarization model loaded successfully")
         except Exception as e:
             print(f"Error loading model {self.model_name}: {e}")
-            # Fallback to lightweight DistilBART
-            print("Falling back to lightweight DistilBART model...")
-            self.model_name = "sshleifer/distilbart-cnn-6-6"
+            # Fallback to ultra-lightweight T5
+            print("Falling back to ultra-lightweight T5-small model...")
+            self.model_name = "t5-small"
             self.summarizer = pipeline("summarization", model=self.model_name)
     
     def preprocess_academic_text(self, text: str) -> str:
@@ -105,8 +105,15 @@ class PaperMindSummarizer:
                     summaries.append(chunk[:200])
                     continue
                 
+                # Handle T5 models which need text preprocessing
+                if "t5" in self.model_name.lower():
+                    # T5 expects "summarize: " prefix
+                    input_text = f"summarize: {chunk}"
+                else:
+                    input_text = chunk
+                
                 summary = self.summarizer(
-                    chunk,
+                    input_text,
                     max_length=chunk_max_length,
                     min_length=chunk_min_length,
                     do_sample=False,
@@ -150,20 +157,20 @@ class PaperMindSummarizer:
         self.model_name = new_model
         self.load_model()
 
-# Available models for different use cases (optimized for low memory)
+# Available models for different use cases (ultra-lightweight for 512MB)
 AVAILABLE_MODELS = {
-    "distilbart": "sshleifer/distilbart-cnn-6-6",  # Ultra-lightweight for 512MB memory (RECOMMENDED)
-    "bart": "sshleifer/distilbart-cnn-12-6",      # Good balance of speed and quality
-    "t5": "t5-small",                             # Small T5 model (~60MB)
-    "pegasus": "google/pegasus-xsum",             # News-style summaries (medium size)
-    "led": "allenai/led-base-16384",              # For longer documents (larger - use carefully)
+    "t5": "t5-small",                               # Ultra-lightweight ~60MB (RECOMMENDED for free tier)
+    "distilbart": "sshleifer/distilbart-cnn-6-6",  # Lightweight ~268MB (may hit memory limit)
+    "bart": "sshleifer/distilbart-cnn-12-6",       # Medium ~600MB (likely to exceed memory)
+    "pegasus": "google/pegasus-xsum",              # News-style (large - exceeds memory)
+    "led": "allenai/led-base-16384",               # For long docs (very large - exceeds memory)
 }
 
 # Initialize default summarizer
 _default_summarizer = PaperMindSummarizer()
 
 def summarize_text(text: str, max_chunk_length: int = 1000, 
-                  model: str = "distilbart", style: str = "academic") -> str:
+                  model: str = "t5", style: str = "academic") -> str:
     """Main summarization function with model selection"""
     global _default_summarizer
     
