@@ -1,0 +1,49 @@
+services:
+  # Backend API Service
+  - type: web
+    name: papermind-ai-backend
+    env: python
+    region: ohio
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: ENVIRONMENT
+        value: production
+    # Add your environment variables here:
+    # - key: SUPABASE_URL
+    #   sync: false  # Set manually in Render dashboard
+    # - key: SUPABASE_KEY
+    #   sync: false  # Set manually in Render dashboard
+
+  # Frontend Static Site
+  - type: web
+    name: papermind-ai-frontend
+    env: static
+    region: ohio
+    buildCommand: "echo 'No build required for static frontend'"
+    staticPublishPath: frontend
+    plan: free
+    routes:
+      - type: redirect
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+
+# Database (Optional - if you want PostgreSQL instead of Supabase)
+# databases:
+#   - name: papermind-db
+#     plan: free
+#     databaseName: papermind
+#     user: papermind_user

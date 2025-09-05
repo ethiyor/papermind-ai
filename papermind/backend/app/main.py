@@ -41,22 +41,62 @@ else:
     print("Please create a .env file with your Supabase credentials")
 
 # Initialize FastAPI app
+app = FastAPI(
+    title="PaperMind AI API",
+    description="AI-powered PDF analysis and summarization API",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
 
-app = FastAPI()
+# CORS configuration for production
+origins = [
+    "http://localhost:3000",
+    "http://localhost:8080", 
+    "http://127.0.0.1:8080",
+    "https://*.onrender.com",  # Render domains
+    # Add your frontend domain here when deployed
+]
+
+# For development, allow all origins
+import os
+if os.getenv("ENVIRONMENT") != "production":
+    origins.append("*")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 # Root endpoint
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the API!"}
+    return {
+        "message": "Welcome to PaperMind AI API!",
+        "version": "1.0.0",
+        "status": "healthy",
+        "endpoints": {
+            "docs": "/docs",
+            "health": "/health",
+            "upload": "/upload-pdf/",
+            "search": "/search/",
+            "summarize": "/summarize/",
+            "models": "/models/"
+        }
+    }
 
-# CORS for frontend communication
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Health check endpoint for monitoring
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "timestamp": "2025-09-05",
+        "service": "PaperMind AI Backend",
+        "version": "1.0.0"
+    }
 
 # In-memory fallback storage
 stored_chunks = []
