@@ -1,1 +1,0 @@
-web: cd papermind/backend && python start_production.py
